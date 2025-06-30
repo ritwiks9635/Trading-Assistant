@@ -53,7 +53,7 @@ Key Considerations
 
 By following these steps, you can build a robust trading agent using LangChain, LangGraph, GPT, and free APIs.
 
-
+<pre lang="text"><code>
 trading_assistant/
 │
 ├── agents/                         # Modular Agent Groups (Composable Units)
@@ -100,3 +100,4 @@ trading_assistant/
 ├── main.py                         ✅ Unified CLI: supports both chat + trade
 ├── requirements.txt
 └── README.md
+</code></pre>
