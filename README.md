@@ -52,3 +52,51 @@ Key Considerations
 4. Backtesting and validation.
 
 By following these steps, you can build a robust trading agent using LangChain, LangGraph, GPT, and free APIs.
+
+
+trading_assistant/
+│
+├── agents/                         # Modular Agent Groups (Composable Units)
+│   ├── data_collector_agent.py    # News + Price analysis
+│   ├── ai_analyst_agent.py        # GPT/Gemini insight generation
+│   └── trading_agent.py           # Strategy + Trade execution
+│
+├── nodes/                          # Core Functional Nodes
+│   ├── news_analyst_node.py
+│   ├── price_analyst_node.py
+│   ├── gpt_analyst_node.py
+│   ├── strategy_node.py
+│   ├── trade_executor_node.py
+│   ├── user_query_node.py
+│   ├── intent_parser_node.py
+│   ├── decision_router_node.py     ✅ Routes flow post-intent
+│   └── report_node.py              ✅ Generates user-facing responses
+│
+├── graphs/                         # LangGraph DAGs
+│   ├── trading_pipeline.py         # For pure trading flow / backtests
+│   └── dual_pipeline.py            ✅ Production DAG: chat + trading
+│
+├── state/
+│   └── shared_state.py             ✅ (Planned) Custom state management / memory helpers
+│
+├── utils/
+│   ├── api_clients.py              ✅ (Planned) API wrappers (NewsAPI, Alpha Vantage, etc.)
+│   ├── preprocessors.py            ✅ (Planned) Input sanitation, text cleaners
+│   ├── postprocessors.py           ✅ (Planned) Output formatting, interpretation
+│   └── logger.py                   ✅ (Planned) File & stdout logger
+│
+├── config/
+│   └── config.yaml                 ✅ (Planned) Central settings: thresholds, model config
+│
+├── data/
+│   └── history.json                ✅ (Optional) Store trade logs or chat transcripts
+│
+├── core/;
+│   └── schemas.py                  ✅ Shared pydantic schemas (TradingState, Signal, etc.)
+│
+├── model/
+│   └── model.py                    ✅ Gemini model interface abstraction
+│
+├── main.py                         ✅ Unified CLI: supports both chat + trade
+├── requirements.txt
+└── README.md
