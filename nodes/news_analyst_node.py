@@ -1,10 +1,12 @@
-# nodes/news_analyst_node.py
-
 import os
 from core.schemas import TradingState, NewsArticle
 from newsapi import NewsApiClient
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 from typing import List
+from utils.logger import log_info, log_error
+
+load_dotenv()
 
 def news_analyst_node(state: TradingState) -> TradingState:
     """
@@ -43,10 +45,10 @@ def news_analyst_node(state: TradingState) -> TradingState:
             articles.append(article)
 
         state.raw_news = articles
+        log_info(f"[NewsAnalystNode] Fetched {len(articles)} articles for {state.symbol}")
         return state
 
     except Exception as e:
-        # Log the error if using a logging framework
-        print(f"[NewsAnalystNode] Error: {e}")
+        log_error(f"[NewsAnalystNode] Failed to fetch news: {e}")
         state.raw_news = []
         return state

@@ -12,6 +12,13 @@ def data_collector_agent(state: TradingState) -> TradingState:
     Returns:
         TradingState: Updated state with raw_news and price_data populated.
     """
+    if not isinstance(state, TradingState):
+        raise TypeError("Expected TradingState")
+    
     state = news_analyst_node(state)
-    state = price_analyst_node(state)
+    try:
+        state = price_analyst_node(state)
+    except Exception as e:
+        print(f"[DataCollectorAgent] Price analysis failed: {e}")
+        state.price_data = None
     return state

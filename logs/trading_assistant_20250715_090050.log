@@ -1,0 +1,7 @@
+2025-07-15 14:30:58 [INFO] TradingAssistant: [UserQueryNode] Received query: Show me the top 5 gainers in the NASDAQ today
+2025-07-15 14:30:58 [INFO] TradingAssistant: [QueryParserNode] Parsed Query: {'top_n_requested': 5, 'time_frame': 'today', 'query_type': 'top_gainers', 'company_mentioned': None, 'budget': None}
+2025-07-15 14:31:01 [INFO] TradingAssistant: [IntentParserNode] Override: stock_insight \u2192 report_request (matched top_gainers keyword)
+2025-07-15 14:31:01 [INFO] TradingAssistant: [IntentParserNode] Detected intent: report_request
+2025-07-15 14:31:01 [INFO] TradingAssistant: [NewsAnalystNode] Fetched 10 articles for AAPL
+2025-07-15 14:31:04 [INFO] TradingAssistant: [PriceAnalystNode] Retrieved 45 price points for AAPL
+2025-07-15 14:31:07 [INFO] TradingAssistant: [AIAnalystAgent] Gemini insight generated.

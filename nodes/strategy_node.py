@@ -1,7 +1,6 @@
-# nodes/strategy_node.py
-
 from core.schemas import TradingState, TradeSignal, GPTInsight
 from typing import Optional
+from utils.logger import log_info, log_error
 
 # --- Configurable thresholds for signal generation ---
 CONFIDENCE_THRESHOLD = 0.6
@@ -22,34 +21,41 @@ def strategy_node(state: TradingState) -> TradingState:
 
     if not insight:
         raise ValueError("Missing GPT insight in state — strategy_node requires this input.")
+    
+    try:
+        action: str
+        confidence = round(insight.confidence, 2)
+        sentiment = round(insight.sentiment_score, 2)
 
-    action: str
-    confidence = round(insight.confidence, 2)
-    sentiment = round(insight.sentiment_score, 2)
-
-    if confidence >= CONFIDENCE_THRESHOLD:
-        if sentiment >= SENTIMENT_THRESHOLD_BUY:
-            action = "buy"
-        elif sentiment <= SENTIMENT_THRESHOLD_SELL:
-            action = "sell"
+        if confidence >= CONFIDENCE_THRESHOLD:
+            if sentiment >= SENTIMENT_THRESHOLD_BUY:
+                action = "buy"
+            elif sentiment <= SENTIMENT_THRESHOLD_SELL:
+                action = "sell"
+            else:
+                action = "hold"
         else:
-            action = "hold"
-    else:
-        action = "hold"  # Low confidence fallback
+            action = "hold"  # Low confidence fallback
 
-    reasoning = (
-        f"Action: {action.upper()} — Confidence: {confidence}, "
-        f"Sentiment: {sentiment}, Summary: {insight.summary}"
-    )
+        reasoning = (
+            f"Action: {action.upper()} — Confidence: {confidence}, "
+            f"Sentiment: {sentiment}, Summary: {insight.summary}"
+        )
 
-    position_size = 0.05 if action in ("buy", "sell") else 0.0  # Example: 5% of portfolio
+        position_size = 0.05 if action in ("buy", "sell") else 0.0  # Example: 5% of portfolio
 
-    trade_signal = TradeSignal(
-        action=action,
-        reasoning=reasoning,
-        confidence=confidence,
-        suggested_position_size=position_size
-    )
+        trade_signal = TradeSignal(
+            action=action,
+            reasoning=reasoning,
+            confidence=confidence,
+            suggested_position_size=position_size
+        )
 
-    state.trade_signal = trade_signal
+        state.trade_signal = trade_signal
+
+        log_info(f"[StrategyNode] Generated signal: {state.trade_signal}")
+    except Exception as e:
+        log_error(f"[StrategyNode] Error: {e}")
+        state.trade_signal = None
+
     return state

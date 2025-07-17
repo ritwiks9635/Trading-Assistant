@@ -2,6 +2,7 @@ import yfinance as yf
 from core.schemas import TradingState, PricePoint
 from datetime import datetime
 from typing import List
+from utils.logger import log_info, log_error
 
 def price_analyst_node(state: TradingState) -> TradingState:
     """
@@ -18,21 +19,19 @@ def price_analyst_node(state: TradingState) -> TradingState:
 
         data: List[PricePoint] = []
         for ts, row in df.iterrows():
-            point = PricePoint(
+            data.append(PricePoint(
                 timestamp=ts.to_pydatetime(),
                 open=float(row["Open"]),
                 high=float(row["High"]),
                 low=float(row["Low"]),
                 close=float(row["Close"]),
                 volume=int(row["Volume"])
-            )
-            data.append(point)
+            ))
 
         state.price_data = data
-        return state
-
+        log_info(f"[PriceAnalystNode] Retrieved {len(data)} price points for {state.symbol}")
     except Exception as e:
-        # Log the error if using a logging framework
-        print(f"[PriceAnalystNode] Error: {e}")
+        log_error(f"[PriceAnalystNode] Failed to fetch price data: {e}")
         state.price_data = []
-        return state
+
+    return state

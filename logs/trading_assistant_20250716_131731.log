@@ -1,0 +1,45 @@
+2025-07-16 18:48:14 [INFO] TradingAssistant: [UserQueryNode] Received query: Show me the top 5 gainers in the NASDAQ today?
+2025-07-16 18:48:14 [INFO] TradingAssistant: [QueryParserNode] Parsed Query: {'top_n_requested': 5, 'time_frame': 'today', 'query_type': 'top_gainers', 'company_mentioned': None, 'budget': None}
+2025-07-16 18:48:16 [INFO] TradingAssistant: [IntentParserNode] Override: stock_insight \u2192 report_request (matched top_gainers keyword)
+2025-07-16 18:48:16 [INFO] TradingAssistant: [IntentParserNode] Detected intent: report_request
+2025-07-16 18:48:16 [INFO] TradingAssistant: [DecisionRouter] Detected 'top_gainers' query \u2192 Routing to step_fetch_top_movers
+2025-07-16 18:48:35 [INFO] TradingAssistant: [TopMoversNode] \u2705 Fetched 5 companies.
+2025-07-16 18:48:35 [INFO] TradingAssistant: [GPTAnalystNode] \U0001f50d Sending prompt to Gemini...
+2025-07-16 18:48:35 [INFO] TradingAssistant: [Prompt Sent]
+You are a professional AI market analyst. A user asked:
+"Show me the top 5 gainers in the NASDAQ today?"
+
+Here are the top 5 companies based on: 
+query_type = top_gainers, timeframe = today, budget = $N/A:
+
+- BABA (Alibaba Group Holding Limited) | Price: $116.97 | Change: 2.02% | Cap: 279086891008 | Bullish: N/A% | N/A
+- AMD (Advanced Micro Devices, Inc.) | Price: $155.61 | Change: 1.21% | Cap: 252306063360 | Bullish: N/A% | N/A
+- MSFT (Microsoft Corporation) | Price: $505.82 | Change: 0.56% | Cap: 3759527428096 | Bullish: N/A% | N/A
+- AMZN (Amazon.com, Inc.) | Price: $226.35 | Change: 0.07% | Cap: 2403022143488 | Bullish: N/A% | N/A
+- AAPL (Apple Inc.) | Price: $209.11 | Change: -0.05% | Cap: 3123225034752 | Bullish: N/A% | N/A
+
+Now return a **valid JSON** with the structure:
+{
+  "sentiment_score": float (-1 to 1),
+  "summary": string,
+  "bullish_indicators": [list of stock symbols],
+  "bearish_indicators": [list of stock symbols],
+  "portfolio_fit": [top 2–3 tickers for diversification],
+  "confidence": float (0 to 1),
+  "forecast_summary": optional string
+}
+
+2025-07-16 18:48:37 [INFO] TradingAssistant: [Gemini Response Raw]
+```json
+{
+  "sentiment_score": 0.2,
+  "summary": "Today's NASDAQ top gainers show a slightly positive sentiment. Alibaba (BABA) leads with a 2.02% increase, followed by AMD with a 1.21% gain.  Microsoft (MSFT) and Amazon (AMZN) show modest gains, while Apple (AAPL) experienced a slight decline. Overall, the market shows limited movement.",
+  "bullish_indicators": ["BABA", "AMD"],
+  "bearish_indicators": ["AAPL"],
+  "portfolio_fit": ["BABA", "MSFT", "AMD"],
+  "confidence": 0.7,
+  "forecast_summary": "The limited movement suggests a period of consolidation.  Further observation is needed to determine the direction of the market.  BABA and AMD's performance warrants monitoring for potential further gains, while the relatively stable performance of MSFT offers a degree of portfolio stability."
+}
+```
+2025-07-16 18:48:37 [INFO] TradingAssistant: [GPTAnalystNode] \u2705 Insight parsed successfully.
+2025-07-16 18:48:40 [INFO] TradingAssistant: [ReportNode] Generated user-facing response.

@@ -12,6 +12,9 @@ def trading_agent(state: TradingState) -> TradingState:
     Returns:
         TradingState: Updated state with trade_signal and executed_trade.
     """
+    if not isinstance(state, TradingState):
+        raise TypeError("Expected TradingState")
+    
     state = strategy_node(state)
     state = trade_executor_node(state)
     return state

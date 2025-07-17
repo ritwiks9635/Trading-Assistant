@@ -33,6 +33,9 @@ class GPTInsight(BaseModel):
     bullish_indicators: List[str]
     bearish_indicators: List[str]
     confidence: float = Field(..., ge=0.0, le=1.0)
+    portfolio_fit: Optional[List[str]] = []  # ✅ Added for diversified suggestions
+    forecast_summary: Optional[str] = None   # ✅ Optional field for future insights
+
 
 # --- 4. Trade Signal Schema ---
 class TradeSignal(BaseModel):
@@ -50,7 +53,27 @@ class ExecutedTrade(BaseModel):
     price: float
     status: Literal["executed", "rejected"]
 
-# --- 6. Unified State Model ---
+# --- 6. Parsed Query Schema ---
+class ParsedQuery(BaseModel):
+    top_n_requested: Optional[int] = 5
+    time_frame: Optional[str] = "today"  # today | this_week | this_month | long_term
+    query_type: Optional[str] = "top_gainers"  # top_gainers | top_losers | budget_picks | news_driven
+    company_mentioned: Optional[str] = None
+    budget: Optional[float] = None
+
+# --- 7. Company Data Schema ---
+class CompanyData(BaseModel):
+    symbol: str
+    name: Optional[str] = None
+    price: Optional[float] = None
+    percent_change: Optional[float] = None
+    volume: Optional[int] = None
+    market_cap: Optional[float] = None
+    bullish_percent: Optional[float] = None
+    bearish_percent: Optional[float] = None
+    summary: Optional[str] = None
+
+# --- 8. Unified State Model ---
 class TradingState(BaseModel):
     symbol: str = Field(..., description="The trading symbol (e.g., AAPL, BTCUSD)")
 
@@ -65,5 +88,9 @@ class TradingState(BaseModel):
     trade_signal: Optional[TradeSignal] = None
     executed_trade: Optional[ExecutedTrade] = None
 
+    parsed_query: Optional[ParsedQuery] = None
+    top_movers: Optional[List[CompanyData]] = None
+
     run_id: Optional[str] = None  # UUID or timestamp for tracking
     timestamp: Optional[datetime] = None
+    next: Optional[str] = None

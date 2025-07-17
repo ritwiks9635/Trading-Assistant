@@ -53,50 +53,70 @@ Key Considerations
 
 By following these steps, you can build a robust trading agent using LangChain, LangGraph, GPT, and free APIs.
 
+<pre lang="text"><code>
+Trading-Assistant/
+│
+├── .env                          # Environment variables (API keys, secrets)
+├── .gitignore                    # Git ignore rules (.env, __pycache__, *.log, etc.)
+├── main.py                       # Entry point CLI for trading and chat interaction
+├── requirements.txt              # Python dependencies
+├── README.md                     # Project documentation
+│
+├── agents/                       # Composable modular agent classes
+│   ├── __init__.py
+│   ├── data_collector_agent.py   # Aggregates market/news data
+│   ├── ai_analyst_agent.py       # Generates insights using LLMs
+│   └── trading_agent.py          # Executes trading logic and strategy
+│
+├── nodes/                        # Individual LangGraph processing units
+│   ├── user_query_node.py        # Accepts and processes user input
+│   ├── query_parser_node.py      # Converts queries to structured form
+│   ├── intent_parser_node.py     # Detects user intent (e.g., insight, portfolio)
+│   ├── decision_router_node.py   # Directs control flow based on intent
+│   ├── top_movers_node.py        # Fetches top gainers/losers and trending stocks
+│   ├── stock_insight_node.py     # Pulls company-level fundamentals
+│   ├── technical_analysis_node.py# Calculates indicators (RSI, MACD, etc.)
+│   ├── risk_analysis_node.py     # Computes portfolio/stock risk metrics
+│   ├── macro_trend_node.py       # Analyzes macro-level market trends
+│   ├── portfolio_node.py         # Portfolio summary and analysis
+│   ├── news_analyst_node.py      # News sentiment extraction
+│   ├── price_analyst_node.py     # Short-term price signal processing
+│   ├── gpt_analyst_node.py       # General-purpose AI reasoning node
+│   ├── strategy_node.py          # Converts insights to trading signals
+│   ├── trade_executor_node.py    # Simulates or performs trades
+│   └── report_node.py            # Final output generation for users
+│
+├── graphs/                       # LangGraph DAGs (pipeline compositions)
+│   ├── __init__.py
+│   ├── dual_pipeline.py          # Combined chat + trading pipeline
+│   └── trading_pipeline.py       # Pure backtesting/trading logic pipeline
+│
+├── core/                         # Shared data models and schema definitions
+│   └── schemas.py                # Pydantic models (TradingState, Signal, etc.)
+│
+├── model/                        # Model abstraction and interfaces
+│   ├── __init__.py
+│   └── model.py                  # Gemini model integration and handler
+│
+├── utils/                        # Utility modules and API integrations
+│   ├── api_clients.py            # Wrappers for yfinance, NewsAPI, etc.
+│   ├── alpha_client.py           # Alpha Vantage integration
+│   ├── etf_client.py             # ETF info via IEX/TwelveData
+│   ├── logger.py                 # Logger (console + file)
+│   ├── preprocessors.py          # (Planned) Input cleaning
+│   └── postprocessors.py         # (Planned) Output formatting
+│
+├── config/                       # (Planned) Config files
+│   ├── __init__.py
+│   └── config.yaml               # (Planned) Thresholds, API configs, etc.
+│
+├── state/                        # (Planned) Persistent context and memory
+│   └── shared_state.py           # (Planned) User state across sessions
+│
+├── data/                         # Optional saved transcripts or history
+│   └── history.json              # (Optional) Trade and chat logs
+│
+└── logs/                         # Automatically generated logs
+    └── trading_assistant_*.log   # Timestamped runtime logs
 
-trading_assistant/
-│
-├── agents/                         # Modular Agent Groups (Composable Units)
-│   ├── data_collector_agent.py    # News + Price analysis
-│   ├── ai_analyst_agent.py        # GPT/Gemini insight generation
-│   └── trading_agent.py           # Strategy + Trade execution
-│
-├── nodes/                          # Core Functional Nodes
-│   ├── news_analyst_node.py
-│   ├── price_analyst_node.py
-│   ├── gpt_analyst_node.py
-│   ├── strategy_node.py
-│   ├── trade_executor_node.py
-│   ├── user_query_node.py
-│   ├── intent_parser_node.py
-│   ├── decision_router_node.py     ✅ Routes flow post-intent
-│   └── report_node.py              ✅ Generates user-facing responses
-│
-├── graphs/                         # LangGraph DAGs
-│   ├── trading_pipeline.py         # For pure trading flow / backtests
-│   └── dual_pipeline.py            ✅ Production DAG: chat + trading
-│
-├── state/
-│   └── shared_state.py             ✅ (Planned) Custom state management / memory helpers
-│
-├── utils/
-│   ├── api_clients.py              ✅ (Planned) API wrappers (NewsAPI, Alpha Vantage, etc.)
-│   ├── preprocessors.py            ✅ (Planned) Input sanitation, text cleaners
-│   ├── postprocessors.py           ✅ (Planned) Output formatting, interpretation
-│   └── logger.py                   ✅ (Planned) File & stdout logger
-│
-├── config/
-│   └── config.yaml                 ✅ (Planned) Central settings: thresholds, model config
-│
-├── data/
-│   └── history.json                ✅ (Optional) Store trade logs or chat transcripts
-│
-├── core/;
-│   └── schemas.py                  ✅ Shared pydantic schemas (TradingState, Signal, etc.)
-│
-├── model/
-│   └── model.py                    ✅ Gemini model interface abstraction
-│
-├── main.py                         ✅ Unified CLI: supports both chat + trade
-├── requirements.txt
-└── README.md
+</code></pre>
