@@ -1,4 +1,0 @@
-2025-07-14 18:00:39 [INFO] TradingAssistant: [UserQueryNode] Received query: Show me the top 5 gainers in the NASDAQ today?
-2025-07-14 18:00:39 [INFO] TradingAssistant: [QueryParserNode] Parsed Query: {'top_n_requested': 5, 'time_frame': 'today', 'query_type': 'top_gainers', 'company_mentioned': None, 'budget': None}
-2025-07-14 18:00:40 [INFO] TradingAssistant: [IntentParserNode] Detected intent: stock_insight
-2025-07-14 18:00:42 [INFO] TradingAssistant: [StockInsightNode] Insight generated via Alpha Vantage for AAPL.

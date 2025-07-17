@@ -1,5 +1,0 @@
-2025-07-15 18:20:30 [INFO] TradingAssistant: [UserQueryNode] Received query: Show me the top 5 gainers in the NASDAQ today?
-2025-07-15 18:20:30 [INFO] TradingAssistant: [QueryParserNode] Parsed Query: {'top_n_requested': 5, 'time_frame': 'today', 'query_type': 'top_gainers', 'company_mentioned': None, 'budget': None}
-2025-07-15 18:20:44 [INFO] TradingAssistant: [IntentParserNode] Override: stock_insight \u2192 report_request (matched top_gainers keyword)
-2025-07-15 18:20:44 [INFO] TradingAssistant: [IntentParserNode] Detected intent: report_request
-2025-07-15 18:20:44 [INFO] TradingAssistant: [DecisionRouter] Detected 'top_gainers' query \u2192 Routing to step_fetch_top_movers
