@@ -22,6 +22,7 @@ from nodes.risk_analysis_node import risk_analysis_node
 from nodes.portfolio_node import portfolio_node
 from nodes.macro_trend_node import macro_trend_node
 
+
 def build_dual_pipeline():
     graph = StateGraph(TradingState)
 
@@ -47,8 +48,8 @@ def build_dual_pipeline():
     graph.add_node("step_portfolio_guidance", portfolio_node)
     graph.add_node("step_macro_trends", macro_trend_node)
 
-    # 🧾 Final formatted reply
-    graph.add_node("step_generate_response", report_node)
+    # 🧾 Final formatted reply (always the last step)
+    graph.add_node("step_report", report_node)
 
     # ▶️ Start of pipeline
     graph.set_entry_point("step_user_input")
@@ -62,20 +63,20 @@ def build_dual_pipeline():
     # ✅ Trading analysis path
     graph.add_edge("step_collect_data", "step_analyze_data")
     graph.add_edge("step_analyze_data", "step_make_trade")
-    graph.add_edge("step_make_trade", "step_generate_response")
+    graph.add_edge("step_make_trade", "step_report")
 
-    # ✅ Top movers → GPT analysis
+    # ✅ Top movers → GPT analysis → Report
     graph.add_edge("step_fetch_top_movers", "step_gpt_analysis")
-    graph.add_edge("step_gpt_analysis", "step_generate_response")
+    graph.add_edge("step_gpt_analysis", "step_report")
 
-    # ✅ Direct-return nodes (end here)
-    graph.add_edge("step_stock_insight", END)
-    graph.add_edge("step_technical_analysis", END)
-    graph.add_edge("step_risk_analysis", END)
-    graph.add_edge("step_portfolio_guidance", END)
-    graph.add_edge("step_macro_trends", END)
+    # ✅ Specialized analysis → Report
+    graph.add_edge("step_stock_insight", "step_report")
+    graph.add_edge("step_technical_analysis", "step_report")
+    graph.add_edge("step_risk_analysis", "step_report")
+    graph.add_edge("step_portfolio_guidance", "step_report")
+    graph.add_edge("step_macro_trends", "step_report")
 
-    # ✅ Fallback final response (e.g., unknown intent)
-    graph.add_edge("step_generate_response", END)
+    # ✅ Final stop
+    graph.add_edge("step_report", END)
 
     return graph.compile()

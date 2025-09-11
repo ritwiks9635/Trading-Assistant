@@ -2,11 +2,17 @@ from core.schemas import TradingState
 from model.model import model
 from utils.logger import log_info, log_error
 
-# 🚀 Production-grade categories
+# Keywords → Hard routing logic
 TOP_GAINERS_KEYWORDS = [
     "top gainers", "most gained", "high growth", "best performing",
     "top performing", "strong stocks", "positive return", "top 5 gainers",
     "nasdaq gainers", "top stocks today", "best stocks today"
+]
+
+FUNDAMENTAL_KEYWORDS = [
+    "dividend", "dividend yield", "payout", "eps", "earnings per share",
+    "pe ratio", "price to earnings", "roe", "return on equity", "valuation",
+    "pb ratio", "fundamental", "peg", "cash flow", "revenue", "profit margin"
 ]
 
 INTENT_PROMPT = """
@@ -21,6 +27,7 @@ You are a professional trading assistant AI. Classify the user's query into one 
 - risk_assessment → Questions about volatility, risk, or Sharpe ratio
 - portfolio_guidance → Help managing or rebalancing user portfolio
 - macro_trend → Asks about market-wide trends or economic effects
+- fundamental_lookup → User wants company fundamentals like dividend yield, P/E ratio, etc.
 - unknown → Use only if none of the above apply
 
 Instructions:
@@ -44,7 +51,7 @@ def intent_parser_node(state: TradingState) -> TradingState:
         response = model.generate_content(prompt)
         intent = response.text.strip().lower()
 
-        allowed = {
+        allowed_intents = {
             "report_request",
             "recovery_guidance",
             "budget_allocation",
@@ -53,17 +60,24 @@ def intent_parser_node(state: TradingState) -> TradingState:
             "technical_analysis",
             "risk_assessment",
             "portfolio_guidance",
-            "macro_trend"
+            "macro_trend",
+            "fundamental_lookup",
         }
 
-        if intent not in allowed:
+        if intent not in allowed_intents:
             intent = "unknown"
 
-        # ✅ Hard fallback for top gainers queries
+        # 🧠 Override 1: force report_request for "top gainer" queries
         if intent == "stock_insight":
-            if any(keyword in lowered for keyword in TOP_GAINERS_KEYWORDS):
+            if any(kw in lowered for kw in TOP_GAINERS_KEYWORDS):
                 log_info("[IntentParserNode] Override: stock_insight → report_request (matched top_gainers keyword)")
                 intent = "report_request"
+
+        # 🧠 Override 2: detect fundamental lookup even if LLM misses it
+        if intent not in {"fundamental_lookup", "unknown"}:
+            if any(kw in lowered for kw in FUNDAMENTAL_KEYWORDS):
+                log_info("[IntentParserNode] Override: intent → fundamental_lookup (matched fundamental keyword)")
+                intent = "fundamental_lookup"
 
         state.intent = intent
         log_info(f"[IntentParserNode] Detected intent: {intent}")

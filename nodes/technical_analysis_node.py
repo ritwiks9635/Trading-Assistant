@@ -1,93 +1,133 @@
-from core.schemas import TradingState
+from core.schemas import TradingState, TechnicalAnalysis
 from utils.logger import log_info, log_error
-import os
-import requests
+import yfinance as yf
+import pandas as pd
+import time
+from typing import Optional, Tuple, Dict
 
-FINNHUB_API = "https://finnhub.io/api/v1"
-API_KEY = os.getenv("FINNHUB_API_KEY")
+# ---------- Simple cache for yfinance ----------
+_YF_CACHE: Dict[str, Dict[str, object]] = {}
+_YF_TTL_SEC = 300
 
-def fetch_finnhub_indicator(symbol: str, indicator: str, params: dict = {}) -> dict:
-    url = f"{FINNHUB_API}/indicator"
-    query = {
-        "symbol": symbol.upper(),
-        "resolution": "D",
-        "from": params.get("from"),
-        "to": params.get("to"),
-        "indicator": indicator,
-        "token": API_KEY,
-        **params.get("params", {})
-    }
+def _get_yf_history(symbol: str, period: str = "1y") -> pd.DataFrame:
+    now = time.time()
+    cached = _YF_CACHE.get(symbol)
+    if cached and now - cached["ts"] < _YF_TTL_SEC:
+        return cached["data"]
 
+    t = yf.Ticker(symbol)
+    hist = t.history(period=period)
+    _YF_CACHE[symbol] = {"ts": now, "data": hist}
+    return hist
+
+# ---------- Indicator Calculations ----------
+def calculate_rsi(df: pd.DataFrame, period: int = 14) -> Optional[float]:
     try:
-        response = requests.get(url, params=query)
-        response.raise_for_status()
-        return response.json()
+        delta = df["Close"].diff()
+        gain = delta.clip(lower=0).rolling(period).mean()
+        loss = -delta.clip(upper=0).rolling(period).mean()
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        return round(float(rsi.iloc[-1]), 2)
     except Exception as e:
-        log_error(f"[Finnhub] Failed to fetch {indicator} for {symbol}: {e}")
-        return {}
+        log_error(f"RSI calc failed: {e}")
+        return None
 
+def calculate_macd(df: pd.DataFrame) -> Tuple[Optional[float], Optional[float]]:
+    try:
+        short = df["Close"].ewm(span=12, adjust=False).mean()
+        long = df["Close"].ewm(span=26, adjust=False).mean()
+        macd = short - long
+        signal = macd.ewm(span=9, adjust=False).mean()
+        return round(float(macd.iloc[-1]), 2), round(float(signal.iloc[-1]), 2)
+    except Exception as e:
+        log_error(f"MACD calc failed: {e}")
+        return None, None
+
+def calculate_bbands(df: pd.DataFrame, period: int = 20) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    try:
+        sma = df["Close"].rolling(period).mean()
+        std = df["Close"].rolling(period).std()
+        upper = sma + 2 * std
+        lower = sma - 2 * std
+        price = df["Close"].iloc[-1]
+        return round(float(upper.iloc[-1]), 2), round(float(lower.iloc[-1]), 2), round(float(price), 2)
+    except Exception as e:
+        log_error(f"Bollinger calc failed: {e}")
+        return None, None, None
+
+# ---------- Narrative ----------
+def generate_signal_narrative(symbol, rsi, macd_val, macd_signal, ma_50, ma_200, price):
+    recs = []
+    if rsi is not None:
+        if rsi > 70: recs.append("RSI > 70 → Overbought")
+        elif rsi < 30: recs.append("RSI < 30 → Oversold")
+    if macd_val and macd_signal:
+        if macd_val > macd_signal: recs.append("MACD > Signal → Bullish momentum")
+        else: recs.append("MACD < Signal → Bearish momentum")
+    if ma_50 and ma_200:
+        if ma_50 > ma_200: recs.append("50MA > 200MA → Golden Cross (bullish)")
+        else: recs.append("50MA < 200MA → Death Cross (bearish)")
+    return f"**Signals for {symbol.upper()}**\n- " + "\n- ".join(recs) if recs else "No strong signals detected."
+
+# ---------- Main Node ----------
 def technical_analysis_node(state: TradingState) -> TradingState:
-    """
-    Uses Finnhub API to calculate RSI, MACD, MA, Bollinger Bands.
-    """
     symbol = state.symbol or (state.parsed_query.company_mentioned if state.parsed_query else None)
-
     if not symbol:
-        log_error("[TechnicalAnalysisNode] Missing symbol.")
-        state.user_response = "Sorry, I couldn't identify which stock you're referring to."
-        return state
-
-    if not API_KEY:
-        log_error("[TechnicalAnalysisNode] FINNHUB_API_KEY is not set.")
-        state.user_response = "Internal configuration error. Missing API credentials."
+        state.user_response = "No stock symbol detected."
         return state
 
     try:
-        import time
-        to_ts = int(time.time())
-        from_ts = to_ts - 60 * 60 * 24 * 200  # Last 200 days
+        hist = _get_yf_history(symbol, period="1y")
+        if hist.empty or len(hist) < 200:
+            raise ValueError("Not enough data for indicators")
 
-        # Fetch RSI
-        rsi_data = fetch_finnhub_indicator(symbol, "rsi", {"from": from_ts, "to": to_ts, "params": {"timeperiod": 14}})
-        rsi = rsi_data.get("rsi", [-1])[-1]
+        # Compute indicators
+        ma_50 = round(hist["Close"].rolling(50).mean().iloc[-1], 2)
+        ma_200 = round(hist["Close"].rolling(200).mean().iloc[-1], 2)
+        rsi = calculate_rsi(hist)
+        macd_val, macd_signal = calculate_macd(hist)
+        upper, lower, price = calculate_bbands(hist)
 
-        # Fetch MACD
-        macd_data = fetch_finnhub_indicator(symbol, "macd", {"from": from_ts, "to": to_ts})
-        macd_val = macd_data.get("macd", [-1])[-1]
-        macd_signal = macd_data.get("signal", [-1])[-1]
-
-        # Fetch Moving Averages
-        ma_50_data = fetch_finnhub_indicator(symbol, "sma", {"from": from_ts, "to": to_ts, "params": {"timeperiod": 50}})
-        ma_200_data = fetch_finnhub_indicator(symbol, "sma", {"from": from_ts, "to": to_ts, "params": {"timeperiod": 200}})
-        ma_50 = ma_50_data.get("sma", [-1])[-1]
-        ma_200 = ma_200_data.get("sma", [-1])[-1]
-
-        # Fetch Bollinger Bands
-        bb_data = fetch_finnhub_indicator(symbol, "bbands", {"from": from_ts, "to": to_ts})
-        upper = bb_data.get("upperband", [-1])[-1]
-        lower = bb_data.get("lowerband", [-1])[-1]
-        price = bb_data.get("real", [-1])[-1]
-        position = (
-            "above the upper band 📈" if price > upper else
-            "below the lower band 📉" if price < lower else
-            "within the normal range"
+        # ✅ Populate TechnicalAnalysis model
+        ta = TechnicalAnalysis(
+            symbol=symbol,
+            price=price,
+            rsi=rsi,
+            macd_val=macd_val,
+            macd_signal=macd_signal,
+            ma_50=ma_50,
+            ma_200=ma_200,
+            bb_upper=upper,
+            bb_lower=lower
         )
 
-        # --- Response
-        response = f"""
-📊 **Technical Analysis for {symbol.upper()}**
+        # Human-readable summary
+        band_pos = (
+            "above upper band 📈" if price and upper and price > upper else
+            "below lower band 📉" if price and lower and price < lower else
+            "within range"
+        )
 
-- **RSI (14-day)**: {round(rsi, 2)} {'(Overbought)' if rsi > 70 else '(Oversold)' if rsi < 30 else ''}
-- **MACD**: {round(macd_val, 2)} | Signal: {round(macd_signal, 2)}
-- **50-Day MA**: ${round(ma_50, 2)}
-- **200-Day MA**: ${round(ma_200, 2)}
-- **Bollinger Bands**: Price is currently *{position}*
-"""
-        state.user_response = response.strip()
-        log_info(f"[TechnicalAnalysisNode] Successfully analyzed {symbol}.")
+        summary = [
+            f"📊 **Technical Analysis for {symbol.upper()}** (via yfinance)",
+            f"- RSI(14): {rsi}",
+            f"- MACD: {macd_val} | Signal: {macd_signal}",
+            f"- 50-Day MA: ${ma_50}",
+            f"- 200-Day MA: ${ma_200}",
+            f"- Bollinger: Price {band_pos}"
+        ]
 
+        rec = generate_signal_narrative(symbol, rsi, macd_val, macd_signal, ma_50, ma_200, price)
+
+        # attach final
+        ta.signal = "mixed"
+        ta.reasoning = rec
+        state.technical_analysis = ta
+
+        state.user_response = "\n".join(summary + ["", rec])
+        log_info(f"[TA Node] {symbol} analyzed via yfinance.")
     except Exception as e:
-        log_error(f"[TechnicalAnalysisNode] Failed for {symbol}: {e}")
-        state.user_response = f"Sorry, I couldn't compute technical indicators for {symbol.upper()}."
-
+        log_error(f"[TA Node failed]: {e}")
+        state.user_response = f"Could not compute technicals for {symbol}."
     return state

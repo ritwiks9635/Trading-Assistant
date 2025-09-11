@@ -1,6 +1,0 @@
-2025-07-14 15:12:39 [INFO] TradingAssistant: [UserQueryNode] Received query: What is the current price of Tesla (TSLA) stock?
-2025-07-14 15:12:39 [INFO] TradingAssistant: [QueryParserNode] Symbol set from parsed company: TSLA
-2025-07-14 15:12:39 [INFO] TradingAssistant: [QueryParserNode] Parsed Query: {'top_n_requested': 5, 'time_frame': 'today', 'query_type': 'top_gainers', 'company_mentioned': 'TSLA', 'budget': None}
-2025-07-14 15:13:47 [INFO] TradingAssistant: [IntentParserNode] Detected intent: stock_insight
-2025-07-14 15:13:49 [ERROR] TradingAssistant: [Alpha] Failed to fetch overview for TSLA: could not convert string to float: 'None'
-2025-07-14 15:13:51 [INFO] TradingAssistant: [StockInsightNode] Fallback used: yfinance for TSLA.
