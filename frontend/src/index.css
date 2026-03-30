@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global App Background + Glass Support */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background-color: #0b0f1a; /* darker, elegant background (better contrast for charts + blur) */
+  color: white;
+  overflow: hidden;
+}
+
+/* Optional subtle glow animation for pro look */
+@keyframes floatingGlow {
+  0%, 100% { opacity: 0.8; transform: translateY(0px); }
+  50% { opacity: 1; transform: translateY(-4px); }
+}
+
+/* Utility for slow-pulsing ambient glow behind widgets */
+.glow-pulse {
+  animation: floatingGlow 4s ease-in-out infinite;
+}
