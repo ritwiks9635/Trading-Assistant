@@ -2,7 +2,7 @@
 
 An AI-powered financial analysis and trading platform. It uses **LangGraph** to coordinate specialized agents for market research, technical analysis, and sentiment tracking.
 
-![Trading Assistant](image\trading_view.png)
+![Trading Assistant](image/trading_view.png)
 
 ## 🏗️ Project Architecture
 
