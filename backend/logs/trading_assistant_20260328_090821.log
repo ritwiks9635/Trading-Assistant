@@ -1,0 +1,13 @@
+2026-03-28 14:38:21 [INFO] TradingAssistant: ✅ TradingAssistant Logger initialized successfully.
+2026-03-28 14:38:21 [INFO] TradingAssistant: [SharedState] ✅ Loaded from disk successfully.
+2026-03-28 14:39:53 [INFO] TradingAssistant: [UserQueryNode] Processed user query: Whats the P/E ratio for NVDA
+2026-03-28 14:39:53 [INFO] TradingAssistant: [QueryParserNode] ✅ Company symbol set: NVDA
+2026-03-28 14:39:53 [INFO] TradingAssistant: [QueryParserNode] Parsed → type=fundamental_lookup, timeframe=today, company=NVDA
+2026-03-28 14:39:56 [INFO] TradingAssistant: [IntentParserNode] ✅ Final Detected Intent: fundamental_lookup
+2026-03-28 14:39:56 [INFO] TradingAssistant: [IntentParserNode] 🧭 Query='Whats the P/E ratio for NVDA' → Intent='fundamental_lookup'
+2026-03-28 14:39:56 [INFO] TradingAssistant: [DecisionRouter] 🔎 intent=fundamental_lookup | query_type=fundamental_lookup | symbol=NVDA
+2026-03-28 14:39:56 [INFO] TradingAssistant: [DecisionRouter] 🏢 Company insight → NVDA
+2026-03-28 14:39:56 [INFO] TradingAssistant: [StockInsightNode] 🚀 Starting analysis for NVDA (equity)
+2026-03-28 14:40:00 [INFO] TradingAssistant: [StockInsightNode] ✅ Alpha Vantage data fetched for NVDA
+2026-03-28 14:40:03 [INFO] TradingAssistant: [StockInsightNode] 🧩 yfinance data merged for NVDA
+2026-03-28 14:40:03 [INFO] TradingAssistant: [StockInsightNode] ✅ Stock Insight finalized for NVDA

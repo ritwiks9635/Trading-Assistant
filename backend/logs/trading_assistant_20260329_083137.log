@@ -1,0 +1,27 @@
+2026-03-29 14:01:37 [INFO] TradingAssistant: ✅ TradingAssistant Logger initialized successfully.
+2026-03-29 14:01:37 [INFO] TradingAssistant: [SharedState] ✅ Loaded from disk successfully.
+2026-03-29 14:01:41 [INFO] TradingAssistant: [UserQueryNode] Processed user query: What are the top losers today
+2026-03-29 14:01:41 [INFO] TradingAssistant: [QueryParserNode] 🧭 Market or discovery query detected
+2026-03-29 14:01:41 [INFO] TradingAssistant: [QueryParserNode] Parsed → type=top_losers, timeframe=today, company=N/A
+2026-03-29 14:01:41 [INFO] TradingAssistant: [IntentParserNode] 🔒 Intent locked from parser: top_movers
+2026-03-29 14:01:41 [INFO] TradingAssistant: [DecisionRouter] 🔎 intent=top_movers | query_type=top_losers | symbol=N/A
+2026-03-29 14:01:41 [INFO] TradingAssistant: [DecisionRouter] 🚀 Top movers detected → TopMoversNode
+2026-03-29 14:01:41 [INFO] TradingAssistant: [TopMoversNode] 🔍 type=top_losers | timeframe=today | limit=5
+2026-03-29 14:01:52 [INFO] TradingAssistant: [TopMoversNode] ✅ Finalized 5 companies
+2026-03-29 14:01:52 [INFO] TradingAssistant: [GPTAnalystNode] 🔍 Sending safe prompt to Gemini...
+2026-03-29 14:02:04 [ERROR] TradingAssistant: [GPTAnalystNode] ERROR: 5 validation errors for GPTInsight
+high_potential_tickers.0
+  Input should be a valid string [type=string_type, input_value={'stock': 'AMZN', 'change...ong the listed stocks.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+high_potential_tickers.1
+  Input should be a valid string [type=string_type, input_value={'stock': 'META', 'change...ant decrease in price.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+high_potential_tickers.2
+  Input should be a valid string [type=string_type, input_value={'stock': 'TSLA', 'change...rate decline in price.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+high_potential_tickers.3
+  Input should be a valid string [type=string_type, input_value={'stock': 'AAPL', 'change...se to TSLA's movement."}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+high_potential_tickers.4
+  Input should be a valid string [type=string_type, input_value={'stock': 'NVDA', 'change...ong the listed stocks.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type

@@ -1,0 +1,67 @@
+{
+    "sessions": {
+        "default_user": {
+            "symbol": "",
+            "user_query": null,
+            "intent": null,
+            "user_response": null,
+            "raw_news": null,
+            "price_data": null,
+            "gpt_insight": null,
+            "trade_signal": null,
+            "executed_trade": null,
+            "parsed_query": {
+                "top_n_requested": 5,
+                "time_frame": "today",
+                "query_type": "fundamental_lookup",
+                "company_mentioned": "NVDA",
+                "budget": null,
+                "market": null,
+                "sector": null,
+                "region": null,
+                "criteria": null,
+                "metric_focus": null
+            },
+            "top_movers": null,
+            "stock_insight": null,
+            "technical_analysis": null,
+            "risk_analysis": null,
+            "portfolio_guidance": null,
+            "macro_trends": null,
+            "region": null,
+            "criteria": null,
+            "run_id": null,
+            "timestamp": null,
+            "next": null
+        },
+        "global_user": {
+            "symbol": "",
+            "user_query": null,
+            "intent": null,
+            "user_response": null,
+            "raw_news": null,
+            "price_data": null,
+            "gpt_insight": null,
+            "trade_signal": null,
+            "executed_trade": null,
+            "parsed_query": null,
+            "top_movers": null,
+            "stock_insight": null,
+            "technical_analysis": null,
+            "risk_analysis": null,
+            "portfolio_guidance": null,
+            "macro_trends": null,
+            "region": null,
+            "criteria": null,
+            "run_id": null,
+            "timestamp": null,
+            "next": null
+        }
+    },
+    "global_context": {
+        "last_intent": "fundamental_lookup",
+        "last_region": "global",
+        "last_query_type": "top_losers"
+    },
+    "last_updated": "2026-03-30T07:07:27.507597"
+}

@@ -1,0 +1,12 @@
+2026-03-29 14:53:09 [INFO] TradingAssistant: ✅ TradingAssistant Logger initialized successfully.
+2026-03-29 14:53:09 [INFO] TradingAssistant: [SharedState] ✅ Loaded from disk successfully.
+2026-03-29 14:53:23 [INFO] TradingAssistant: [UserQueryNode] Processed user query: What are the top losers today
+2026-03-29 14:53:23 [INFO] TradingAssistant: [QueryParserNode] 🧭 Market or discovery query detected
+2026-03-29 14:53:23 [INFO] TradingAssistant: [QueryParserNode] Parsed → type=top_losers, timeframe=today, company=N/A
+2026-03-29 14:53:23 [INFO] TradingAssistant: [IntentParserNode] 🔒 Intent locked from parser: top_movers
+2026-03-29 14:53:23 [INFO] TradingAssistant: [DecisionRouter] 🔎 intent=top_movers | query_type=top_losers | symbol=N/A
+2026-03-29 14:53:23 [INFO] TradingAssistant: [DecisionRouter] 🚀 Top movers detected → TopMoversNode
+2026-03-29 14:53:23 [INFO] TradingAssistant: [TopMoversNode] 🔍 type=top_losers | timeframe=today | limit=5
+2026-03-29 14:53:30 [INFO] TradingAssistant: [TopMoversNode] ✅ Finalized 5 companies
+2026-03-29 14:53:30 [INFO] TradingAssistant: [GPTAnalystNode] 🔍 Sending safe prompt to Gemini...
+2026-03-29 14:53:41 [INFO] TradingAssistant: [GPTAnalystNode] ✅ Safe insight generated.
